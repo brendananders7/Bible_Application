@@ -44,21 +44,49 @@ namespace Bible_Application.Controllers
 
             logger.Info("Entered SubmitSearch in Controller");
 
-            searchService search = new searchService();
-            displayObject = search.search(displayObject);
+            try
+            {
+                searchService search = new searchService();
+                displayObject = search.search(displayObject);
 
-            logger.Info("Successfully exiting SubmitSearch in Controller");
-            return View("VerseSearchView", displayObject);
+                logger.Info("Successfully exiting SubmitSearch in Controller");
+                return View("VerseSearchView", displayObject);
+            }
+            catch (Exception e)
+            {
+
+                logger.Error("Exception: " + e.Message);
+                return Content(e.Message);
+            }
         }
 
         //GET: Submit Entry to Database
         [HttpPost]
         public ActionResult SubmitEntry(BibleDisplayObject displayObject)
         {
-            entryService entry = new entryService();
-            displayObject = entry.entry(displayObject);
+            //Dependency Injection for Logger
+            UnityContainer container = new UnityContainer();
+            container.RegisterType<ILogger, Logger>();
+            var logger = container.Resolve<ILogger>();
 
-            return View("VerseEntryView", displayObject);
+            logger = LogManager.GetLogger("bibleAppLoggerRules");
+
+            logger.Info("Entered SubmitEntry in Controller");
+
+            try
+            {
+                entryService entry = new entryService();
+                displayObject = entry.entry(displayObject);
+
+                logger.Info("Successfully exiting SubmitEntry in Controller");
+
+                return View("VerseEntryView", displayObject);
+            }
+            catch (Exception e)
+            {
+                logger.Error("Exception: " + e.Message);
+                return Content(e.Message);
+            }
         }
     }
 }
